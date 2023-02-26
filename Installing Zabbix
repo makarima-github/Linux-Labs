@@ -1,0 +1,82 @@
+step-by-step instructions to install Zabbix on CentOS:
+
+Update the system:
+
+sql
+Copy code
+sudo yum update
+Install the necessary packages:
+
+sql
+Copy code
+sudo yum install epel-release
+sudo yum install wget httpd php php-mysql php-bcmath php-gd php-xml php-mbstring mariadb mariadb-server mariadb-devel
+Start and enable the Apache and MariaDB services:
+
+bash
+Copy code
+sudo systemctl start httpd
+sudo systemctl enable httpd
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+Secure the MariaDB installation:
+
+Copy code
+sudo mysql_secure_installation
+Create a database and user for Zabbix:
+
+sql
+Copy code
+sudo mysql -u root -p
+CREATE DATABASE zabbix CHARACTER SET UTF8 COLLATE UTF8_BIN;
+GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost' IDENTIFIED BY 'your_password';
+FLUSH PRIVILEGES;
+quit;
+Replace your_password with a secure password.
+
+Install the Zabbix repository:
+
+bash
+Copy code
+sudo rpm -ivh https://repo.zabbix.com/zabbix/5.4/rhel/8/x86_64/zabbix-release-5.4-1.el8.noarch.rpm
+Replace 5.4 with the version of Zabbix you want to install.
+
+Install the Zabbix server, frontend, and agent:
+
+Copy code
+sudo yum install zabbix-server-mysql zabbix-web-mysql zabbix-agent
+Edit the Zabbix server configuration file:
+
+bash
+Copy code
+sudo nano /etc/zabbix/zabbix_server.conf
+Uncomment and modify the following lines:
+
+makefile
+Copy code
+DBName=zabbix
+DBUser=zabbix
+DBPassword=your_password
+Replace your_password with the password you created earlier.
+
+Start and enable the Zabbix server and agent services:
+
+bash
+Copy code
+sudo systemctl start zabbix-server
+sudo systemctl enable zabbix-server
+sudo systemctl start zabbix-agent
+sudo systemctl enable zabbix-agent
+Configure the firewall:
+
+css
+Copy code
+sudo firewall-cmd --add-service=http --permanent
+sudo firewall-cmd --add-service=https --permanent
+sudo firewall-cmd --add-port=10050/tcp --permanent
+sudo firewall-cmd --reload
+Access the Zabbix frontend:
+
+Open your web browser and navigate to http://your_server_ip/zabbix. Follow the on-screen instructions to complete the installation.
+
+That's it! You have successfully installed Zabbix on CentOS.
